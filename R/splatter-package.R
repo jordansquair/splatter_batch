@@ -10,6 +10,6 @@
 #' Zappia L, Phipson B, Oshlack A. Splatter: Simulation Of Single-Cell RNA
 #' Sequencing Data. bioRxiv. 2017; doi:10.1101/133173
 #'
-#' @name splatter
+#' @name splatter_batch
 #' @docType package
 NULL

@@ -4,13 +4,8 @@
 \alias{addGeneLengths}
 \title{Add gene lengths}
 \usage{
-addGeneLengths(
-  sce,
-  method = c("generate", "sample"),
-  loc = 7.9,
-  scale = 0.7,
-  lengths = NULL
-)
+addGeneLengths(sce, method = c("generate", "sample"), loc = 7.9,
+  scale = 0.7, lengths = NULL)
 }
 \arguments{
 \item{sce}{SingleCellExperiment to add gene lengths to.}

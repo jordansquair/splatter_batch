@@ -7,12 +7,8 @@
 \alias{splatSimulatePaths}
 \title{Splat simulation}
 \usage{
-splatSimulate(
-  params = newSplatParams(),
-  method = c("single", "groups", "paths"),
-  verbose = TRUE,
-  ...
-)
+splatSimulate(params = newSplatParams(), method = c("single", "groups",
+  "paths"), orthogonal = FALSE, verbose = TRUE, ...)
 
 splatSimulateSingle(params = newSplatParams(), verbose = TRUE, ...)
 
@@ -28,6 +24,9 @@ See \code{\link{SplatParams}} for details.}
 produces a single population, "groups" which produces distinct groups
 (eg. cell types) or "paths" which selects cells from continuous
 trajectories (eg. differentiation processes).}
+
+\item{orthogonal}{logical. Whether to use orthogonal batch effects or not.
+Can only be used when method == 'group'.}
 
 \item{verbose}{logical. Whether to print progress messages.}
 

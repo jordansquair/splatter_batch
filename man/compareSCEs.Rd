@@ -4,13 +4,8 @@
 \alias{compareSCEs}
 \title{Compare SingleCellExperiment objects}
 \usage{
-compareSCEs(
-  sces,
-  point.size = 0.1,
-  point.alpha = 0.1,
-  fits = TRUE,
-  colours = NULL
-)
+compareSCEs(sces, point.size = 0.1, point.alpha = 0.1, fits = TRUE,
+  colours = NULL)
 }
 \arguments{
 \item{sces}{named list of SingleCellExperiment objects to combine and

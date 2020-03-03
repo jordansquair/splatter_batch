@@ -9,6 +9,8 @@
 #'        produces a single population, "groups" which produces distinct groups
 #'        (eg. cell types) or "paths" which selects cells from continuous
 #'        trajectories (eg. differentiation processes).
+#' @param orthogonal logical. Whether to use orthogonal batch effects or not.
+#'        Can only be used when method == 'group'.
 #' @param verbose logical. Whether to print progress messages.
 #' @param ... any additional parameter settings to override what is provided in
 #'        \code{params}.
@@ -128,6 +130,7 @@
 #' @export
 splatSimulate <- function(params = newSplatParams(),
                           method = c("single", "groups", "paths"),
+                          orthogonal = FALSE,
                           verbose = TRUE, ...) {
 
     checkmate::assertClass(params, "SplatParams")
@@ -192,18 +195,31 @@ splatSimulate <- function(params = newSplatParams(),
     sim <- splatSimLibSizes(sim, params)
     if (verbose) {message("Simulating gene means...")}
     sim <- splatSimGeneMeans(sim, params)
-    if (nBatches > 1) {
-        if (verbose) {message("Simulating batch effects...")}
-        sim <- splatSimBatchEffects(sim, params)
+    if (orthogonal == FALSE) {
+      if (nBatches > 1) {
+          if (verbose) {message("Simulating batch effects...")}
+          sim <- splatSimBatchEffects(sim, params)
+      }
+      sim <- splatSimBatchCellMeans(sim, params)
     }
-    sim <- splatSimBatchCellMeans(sim, params)
     if (method == "single") {
         sim <- splatSimSingleCellMeans(sim, params)
     } else if (method == "groups") {
+      if (orthogonal == FALSE) {
         if (verbose) {message("Simulating group DE...")}
         sim <- splatSimGroupDE(sim, params)
         if (verbose) {message("Simulating cell means...")}
         sim <- splatSimGroupCellMeans(sim, params)
+      } else if (orthogonal == TRUE) {
+        if (verbose) {message("Simulating group DE prior to batch effects...")}
+        sim <- splatSimGroupDE(sim, params)
+        if (verbose) {message("Simulation batch effects....")}
+        sim <- splatSimBatchEffects(sim, params)
+        sim <- splatSimBatchCellMeans(sim, params)
+        if (verbose) {message("Simulating cell means...")}
+        sim <- splatSimGroupCellMeans(sim, params)
+      }
+
     } else {
         if (verbose) {message("Simulating path endpoints...")}
         sim <- splatSimPathDE(sim, params)
@@ -340,6 +356,9 @@ splatSimBatchEffects <- function(sim, params) {
     batch.facLoc <- getParam(params, "batch.facLoc")
     batch.facScale <- getParam(params, "batch.facScale")
     means.gene <- rowData(sim)$GeneMean
+    if (!is.null(rowData(sim)$DEGeneMean)) {
+      gene.means <- rowData(sim)$DEGeneMean
+    }
 
     for (idx in seq_len(nBatches)) {
         batch.facs <- getLNormFactors(nGenes, 1, 0.5, batch.facLoc[idx],
@@ -368,6 +387,9 @@ splatSimBatchCellMeans <- function(sim, params) {
     cell.names <- colData(sim)$Cell
     gene.names <- rowData(sim)$Gene
     gene.means <- rowData(sim)$GeneMean
+    if (!is.null(rowData(sim)$DEGeneMean)) {
+      gene.means <- rowData(sim)$DEGeneMean
+    }
 
     if (nBatches > 1) {
         batches <- colData(sim)$Batch
@@ -423,6 +445,7 @@ splatSimGroupDE <- function(sim, params) {
         de.facs <- getLNormFactors(nGenes, de.prob[idx], de.downProb[idx],
                                    de.facLoc[idx], de.facScale[idx])
         group.means.gene <- means.gene * de.facs
+        rowData(sim)$DEGeneMean <- group.means.gene
         rowData(sim)[[paste0("DEFacGroup", idx)]] <- de.facs
     }
 

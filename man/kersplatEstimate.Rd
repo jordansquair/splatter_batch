@@ -8,9 +8,11 @@
 \usage{
 kersplatEstimate(counts, params = newKersplatParams(), verbose = TRUE)
 
-\method{kersplatEstimate}{SingleCellExperiment}(counts, params = newKersplatParams(), verbose = TRUE)
+\method{kersplatEstimate}{SingleCellExperiment}(counts,
+  params = newKersplatParams(), verbose = TRUE)
 
-\method{kersplatEstimate}{matrix}(counts, params = newKersplatParams(), verbose = TRUE)
+\method{kersplatEstimate}{matrix}(counts, params = newKersplatParams(),
+  verbose = TRUE)
 }
 \arguments{
 \item{counts}{either a counts matrix or a SingleCellExperiment object

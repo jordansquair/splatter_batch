@@ -1,4 +1,4 @@
-Package: splatter
+Package: splatterBatch
 Type: Package
 Title: Simple Simulation of Single-cell RNA Sequencing Data
 Version: 1.11.2

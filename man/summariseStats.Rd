@@ -4,7 +4,8 @@
 \alias{summariseStats}
 \title{Summarise statistics}
 \usage{
-summariseStats(data, split.col, stat.cols, measure = c("MAD", "MAE", "RMSE"))
+summariseStats(data, split.col, stat.cols, measure = c("MAD", "MAE",
+  "RMSE"))
 }
 \arguments{
 \item{data}{The data.frame to summarise}
