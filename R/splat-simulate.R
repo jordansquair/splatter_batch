@@ -10,7 +10,7 @@
 #'        (eg. cell types) or "paths" which selects cells from continuous
 #'        trajectories (eg. differentiation processes).
 #' @param orthogonal logical. Whether to use orthogonal batch effects or not.
-#'        Can only be used when method == 'group'.
+#'        Can only be used when method == 'group'. Defaults to TRUE.
 #' @param verbose logical. Whether to print progress messages.
 #' @param ... any additional parameter settings to override what is provided in
 #'        \code{params}.
@@ -130,7 +130,7 @@
 #' @export
 splatSimulate <- function(params = newSplatParams(),
                           method = c("single", "groups", "paths"),
-                          orthogonal = FALSE,
+                          orthogonal = TRUE,
                           verbose = TRUE, ...) {
 
     checkmate::assertClass(params, "SplatParams")
@@ -195,7 +195,7 @@ splatSimulate <- function(params = newSplatParams(),
     sim <- splatSimLibSizes(sim, params)
     if (verbose) {message("Simulating gene means...")}
     sim <- splatSimGeneMeans(sim, params)
-    if (orthogonal == FALSE) {
+    if (orthogonal == TRUE) {
       if (nBatches > 1) {
           if (verbose) {message("Simulating batch effects...")}
           sim <- splatSimBatchEffects(sim, params)
@@ -205,12 +205,12 @@ splatSimulate <- function(params = newSplatParams(),
     if (method == "single") {
         sim <- splatSimSingleCellMeans(sim, params)
     } else if (method == "groups") {
-      if (orthogonal == FALSE) {
+      if (orthogonal == TRUE) {
         if (verbose) {message("Simulating group DE...")}
         sim <- splatSimGroupDE(sim, params)
         if (verbose) {message("Simulating cell means...")}
         sim <- splatSimGroupCellMeans(sim, params)
-      } else if (orthogonal == TRUE) {
+      } else if (orthogonal == FALSE) {
         if (verbose) {message("Simulating group DE prior to batch effects...")}
         sim <- splatSimGroupDE(sim, params)
         if (verbose) {message("Simulation batch effects....")}
