@@ -8,7 +8,8 @@
 \title{Splat simulation}
 \usage{
 splatSimulate(params = newSplatParams(), method = c("single", "groups",
-  "paths"), orthogonal = FALSE, verbose = TRUE, ...)
+  "paths"), orthogonal = TRUE, batch_group_confound = FALSE,
+  batch_group_confound_prob = 1, verbose = TRUE, ...)
 
 splatSimulateSingle(params = newSplatParams(), verbose = TRUE, ...)
 
@@ -26,7 +27,11 @@ produces a single population, "groups" which produces distinct groups
 trajectories (eg. differentiation processes).}
 
 \item{orthogonal}{logical. Whether to use orthogonal batch effects or not.
-Can only be used when method == 'group'.}
+Can only be used when method == 'group'. Defaults to TRUE.}
+
+\item{batch_group_confound}{logical. Where to completely confound batch with group}
+
+\item{batch_group_confound_prob}{numeric. The degree of pure overlap between batch and group.}
 
 \item{verbose}{logical. Whether to print progress messages.}
 

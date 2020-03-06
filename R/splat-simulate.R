@@ -11,6 +11,8 @@
 #'        trajectories (eg. differentiation processes).
 #' @param orthogonal logical. Whether to use orthogonal batch effects or not.
 #'        Can only be used when method == 'group'. Defaults to TRUE.
+#' @param batch_group_confound logical. Where to completely confound batch with group
+#' @param batch_group_confound_prob numeric. The degree of pure overlap between batch and group.
 #' @param verbose logical. Whether to print progress messages.
 #' @param ... any additional parameter settings to override what is provided in
 #'        \code{params}.
@@ -131,6 +133,8 @@
 splatSimulate <- function(params = newSplatParams(),
                           method = c("single", "groups", "paths"),
                           orthogonal = TRUE,
+                          batch_group_confound = FALSE,
+                          batch_group_confound_prob = 1,
                           verbose = TRUE, ...) {
 
     checkmate::assertClass(params, "SplatParams")
@@ -189,6 +193,16 @@ splatSimulate <- function(params = newSplatParams(),
         groups <- sample(seq_len(nGroups), nCells, prob = group.prob,
                          replace = TRUE)
         colData(sim)$Group <- factor(group.names[groups], levels = group.names)
+        if (batch_group_confound == TRUE) {
+          # completely confound batch with group
+          new_batch = factor(batch.names[groups], levels = batch.names)
+          # the the cell idx to assign a random batch to
+          idx = sample(seq(1, length(new_batch)),
+            floor(length(new_batch) * (1 - batch_group_confound_prob)))
+          new_batch[idx] = batch.names[batches][idx]
+          colData(sim)$Batch = new_batch
+
+        }
     }
 
     if (verbose) {message("Simulating library sizes...")}
@@ -214,7 +228,9 @@ splatSimulate <- function(params = newSplatParams(),
         if (verbose) {message("Simulating group DE prior to batch effects...")}
         sim <- splatSimGroupDE(sim, params)
         if (verbose) {message("Simulation batch effects....")}
-        sim <- splatSimBatchEffects(sim, params)
+        if (nBatches > 1) {
+          sim <- splatSimBatchEffects(sim, params)
+        }
         sim <- splatSimBatchCellMeans(sim, params)
         if (verbose) {message("Simulating cell means...")}
         sim <- splatSimGroupCellMeans(sim, params)
